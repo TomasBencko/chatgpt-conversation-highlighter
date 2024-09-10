@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "My Chrome Extension",
+  "name": "ChatGPT Conversation Highlighter",
   "version": "1.0",
-  "description": "A simple Chrome extension",
+  "description": "Highlights conversations with custom GPTs",
   "permissions": ["activeTab"],
   "action": {
     "default_popup": "popup/popup.html",
@@ -17,7 +17,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": ["https://chatgpt.com/*"],
       "js": ["content/content.js"]
     }
   ],
