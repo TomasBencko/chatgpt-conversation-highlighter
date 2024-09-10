@@ -1,15 +1,20 @@
 console.log('⭐⭐⭐ Content script loaded');
 
-const gptConvoConfig = [
-  { name: 'anki-generator', colorLight: '#d1fae5', colorDark: '#831843', emoji: '🎓' },
-  { name: 'dev-assistant', colorLight: '#e0f2fe', colorDark: '#334155', emoji: '🚀' },
-  { name: 'work-assistant', colorLight: '#e2e8f0', colorDark: '#27272a', emoji: '💼' }
-];
-
 const isDarkMode = document.documentElement.classList.contains('dark');
 
+let gptConvoConfig = [];
+
+async function loadConfig() {
+  try {
+    const response = await chrome.runtime.sendMessage({ action: "getConfig" });
+    gptConvoConfig = response.config || [];
+    console.log('Config loaded:', gptConvoConfig);
+  } catch (error) {
+    console.error('Failed to load config:', error);
+  }
+}
+
 function highlightConversations() {
-  console.log('🔍 Highlighting gpt conversations');
   const nav = document.querySelector('nav[aria-label="Chat history"]');
   if (!nav) return;
 
@@ -43,7 +48,6 @@ function observeChanges() {
   const callback = function(mutationsList, observer) {
     for (let mutation of mutationsList) {
       if (mutation.type === 'childList') {
-        console.log('🔄 Mutation detected');
         highlightConversations();
       }
     }
@@ -53,8 +57,10 @@ function observeChanges() {
   observer.observe(targetNode, config);
 }
 
-// Initial call to highlight existing conversations
-highlightConversations();
+async function init() {
+  await loadConfig();
+  highlightConversations();
+  observeChanges();
+}
 
-// Set up observer to handle dynamically loaded content
-observeChanges();
+init();

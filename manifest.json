@@ -3,7 +3,10 @@
   "name": "ChatGPT Conversation Highlighter",
   "version": "1.0",
   "description": "Highlights conversations with custom GPTs",
-  "permissions": ["activeTab"],
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
   "action": {
     "default_popup": "popup/popup.html",
     "default_icon": {
