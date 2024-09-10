@@ -1,13 +1,15 @@
 console.log('⭐⭐⭐ Content script loaded');
 
 const gptConvoConfig = [
-  { name: 'anki-generator', color: '#FFD700', emoji: '📚' },
-  { name: 'dev-assistant', color: '#32CD32', emoji: '⏱️' },
-  { name: 'work-assistant', color: '#4169E1', emoji: '🚀' }
+  { name: 'anki-generator', colorLight: '#d1fae5', colorDark: '#831843', emoji: '🎓' },
+  { name: 'dev-assistant', colorLight: '#e0f2fe', colorDark: '#334155', emoji: '🚀' },
+  { name: 'work-assistant', colorLight: '#e2e8f0', colorDark: '#27272a', emoji: '💼' }
 ];
 
+const isDarkMode = document.documentElement.classList.contains('dark');
 
 function highlightConversations() {
+  console.log('🔍 Highlighting gpt conversations');
   const nav = document.querySelector('nav[aria-label="Chat history"]');
   if (!nav) return;
 
@@ -16,10 +18,17 @@ function highlightConversations() {
     gptConvoConfig.forEach(gptConvo => {
       const link = item.querySelector(`a[href*="${gptConvo.name}"]`);
       if (link) {
-        item.style.backgroundColor = gptConvo.color;
+        const itemBackground = item.querySelector('div.group');
+        itemBackground.style.backgroundColor = isDarkMode ? gptConvo.colorDark : gptConvo.colorLight;
+        itemBackground.style.color = isDarkMode ? 'rgb(236, 236, 236)' : 'rgb(13, 13, 13)';
+        itemBackground.classList.add('hover:opacity-80');
+        const menuGradient = link.querySelector('div.absolute');
+        if (menuGradient) menuGradient.style.display = 'none';
+        const itemText = link.querySelector('div.relative');
+        if (itemText) itemText.style.textOverflow = 'ellipsis';
         const emojiSpan = document.createElement('span');
         emojiSpan.textContent = gptConvo.emoji;
-        emojiSpan.style.marginRight = '5px';
+        emojiSpan.style.marginRight = '-3px';
         link.insertBefore(emojiSpan, link.firstChild);
         item.setAttribute('data-highlighted', 'true');
       }
@@ -34,6 +43,7 @@ function observeChanges() {
   const callback = function(mutationsList, observer) {
     for (let mutation of mutationsList) {
       if (mutation.type === 'childList') {
+        console.log('🔄 Mutation detected');
         highlightConversations();
       }
     }
